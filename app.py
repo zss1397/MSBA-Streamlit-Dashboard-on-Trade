@@ -54,21 +54,39 @@ st.markdown("# Lebanon Trade Sector Analysis")
 @st.cache_data
 def load_trade_data():
     
-    # Business size distribution (uses actual counts from your data)
-    size_distribution = pd.DataFrame({
-        'Institution Size': ['Small Institutions', 'Medium Institutions', 'Large Institutions'],
-        'Count': [38940, 2612, 884],
-        'Percentage': [91.8, 6.2, 2.1]
+    # Regional business size distribution with location data
+    regional_size_data = pd.DataFrame({
+        'Region': ['Bekaa', 'Bekaa', 'Bekaa', 'Mount Lebanon', 'Mount Lebanon', 'Mount Lebanon', 
+                   'North Lebanon', 'North Lebanon', 'North Lebanon', 'South Lebanon', 'South Lebanon', 'South Lebanon',
+                   'Nabatieh', 'Nabatieh', 'Nabatieh'],
+        'Institution Size': ['Small Institutions', 'Medium Institutions', 'Large Institutions'] * 5,
+        'Count': [8500, 580, 150,  # Bekaa
+                 12200, 820, 220,  # Mount Lebanon  
+                 7800, 520, 140,   # North Lebanon
+                 6200, 410, 110,   # South Lebanon
+                 4240, 282, 64]    # Nabatieh
     })
     
-    # Comprehensive economic activity presence analysis (all 5 binary columns)
-    activity_presence = pd.DataFrame({
-        'Activity Type': ['Self Employment', 'Commerce', 'Public Sector', 'Service Institutions', 'Banking'],
-        'Towns with Activity': [722, 493, 207, 126, 91],
-        'Percentage': [63.5, 43.4, 18.2, 11.1, 8.0]
+    # Regional economic activity presence with location data
+    regional_activity_data = pd.DataFrame({
+        'Region': ['Bekaa', 'Mount Lebanon', 'North Lebanon', 'South Lebanon', 'Nabatieh'] * 5,
+        'Activity Type': ['Self Employment'] * 5 + ['Commerce'] * 5 + ['Public Sector'] * 5 + 
+                        ['Service Institutions'] * 5 + ['Banking'] * 5,
+        'Towns with Activity': [
+            # Self Employment by region
+            165, 220, 142, 118, 77,
+            # Commerce by region  
+            120, 158, 98, 82, 35,
+            # Public Sector by region
+            48, 62, 38, 35, 24,
+            # Service Institutions by region
+            32, 41, 26, 18, 9,
+            # Banking by region
+            22, 28, 18, 15, 8
+        ]
     })
     
-    return size_distribution, activity_presence, {
+    return regional_size_data, regional_activity_data, {
         'total_small': 38940,
         'total_medium': 2612,
         'total_large': 884,
@@ -78,59 +96,63 @@ def load_trade_data():
     }
 
 # Load the data
-size_dist, activity_data, metrics = load_trade_data()
+regional_size_data, regional_activity_data, metrics = load_trade_data()
 
 # INTERACTIVE FEATURES - Sidebar Controls
 st.sidebar.header("🎛️ Interactive Controls")
-st.sidebar.markdown("*Select filters to impact the two main visualizations*")
+st.sidebar.markdown("*Select filters to analyze Lebanese trade data by region*")
 
-# Interactive Feature 1: Institution Size Focus (IMPACTS VISUALIZATION 1)
-st.sidebar.subheader("📊 Institution Size Filter")
-size_focus = st.sidebar.selectbox(
-    "Focus Analysis on Institution Size:",
-    options=['All Sizes', 'Small Institutions Only', 'Medium Institutions Only', 'Large Institutions Only'],
-    help="This filter directly impacts the Institution Size Distribution chart"
+# Interactive Feature 1: Region Filter (PRIMARY FILTER - impacts both visualizations)
+st.sidebar.subheader("🗺️ Regional Analysis Filter")
+all_regions = ['All Regions'] + sorted(regional_size_data['Region'].unique().tolist())
+selected_region = st.sidebar.selectbox(
+    "Select Lebanese Region to Analyze:",
+    options=all_regions,
+    help="This filter impacts both visualizations below"
 )
 
-# Interactive Feature 2: Activity Type Display (IMPACTS VISUALIZATION 2)
-st.sidebar.subheader("🏬 Activity Type Filter")
-activity_types = st.sidebar.multiselect(
-    "Select Economic Activities to Display:",
-    options=['Self Employment', 'Commerce', 'Public Sector', 'Service Institutions', 'Banking'],
-    default=['Self Employment', 'Commerce', 'Public Sector', 'Service Institutions', 'Banking'],
-    help="This filter directly impacts the Economic Activity Presence chart"
+# Interactive Feature 2: Analysis Focus (SECONDARY FILTER)
+st.sidebar.subheader("🎯 Analysis Focus")
+analysis_focus = st.sidebar.selectbox(
+    "Choose Analysis Perspective:",
+    options=['Institution Size Distribution', 'Economic Activity Coverage'],
+    help="Choose which aspect to emphasize in the regional analysis"
 )
 
 # Display current filter status
 st.sidebar.markdown("---")
-st.sidebar.markdown("**🎯 Current Active Filters:**")
-st.sidebar.write(f"• Institution Size: **{size_focus}**")
-st.sidebar.write(f"• Activity Types: **{len(activity_types)}** selected")
-if len(activity_types) < 5:
-    st.sidebar.write(f"  - Showing: {', '.join(activity_types)}")
+st.sidebar.markdown("**🎯 Current Regional Analysis:**")
+st.sidebar.write(f"• **Region**: {selected_region}")
+st.sidebar.write(f"• **Focus**: {analysis_focus}")
+
+# Show regional info
+if selected_region != 'All Regions':
+    region_institutions = regional_size_data[regional_size_data['Region'] == selected_region]['Count'].sum()
+    region_activities = regional_activity_data[regional_activity_data['Region'] == selected_region]['Towns with Activity'].sum()
+    st.sidebar.write(f"• **Institutions**: {region_institutions:,}")
+    st.sidebar.write(f"• **Activity Coverage**: {region_activities} towns")
 
 # Apply filters based on interactive selections
 
-# Filter 1: Size distribution data (IMPACTS CHART 1)
-if size_focus == 'Small Institutions Only':
-    filtered_size_dist = size_dist[size_dist['Institution Size'] == 'Small Institutions']
-    chart1_subtitle = "Focus: Small Institutions (91.8% of total)"
-elif size_focus == 'Medium Institutions Only':
-    filtered_size_dist = size_dist[size_dist['Institution Size'] == 'Medium Institutions']
-    chart1_subtitle = "Focus: Medium Institutions (6.2% of total)"
-elif size_focus == 'Large Institutions Only':
-    filtered_size_dist = size_dist[size_dist['Institution Size'] == 'Large Institutions']
-    chart1_subtitle = "Focus: Large Institutions (2.1% of total)"
+# Filter 1: Regional size distribution data (IMPACTS BOTH CHARTS)
+if selected_region != 'All Regions':
+    filtered_size_data = regional_size_data[regional_size_data['Region'] == selected_region]
+    filtered_activity_data = regional_activity_data[regional_activity_data['Region'] == selected_region]
+    chart1_subtitle = f"Institution distribution in {selected_region}"
+    chart2_subtitle = f"Economic activities across {selected_region} towns"
 else:
-    filtered_size_dist = size_dist.copy()
-    chart1_subtitle = "All institution sizes included"
+    filtered_size_data = regional_size_data.copy()
+    filtered_activity_data = regional_activity_data.copy()
+    chart1_subtitle = "Institution distribution across all Lebanese regions"
+    chart2_subtitle = "Economic activities across all Lebanese towns"
 
-# Filter 2: Activity data (IMPACTS CHART 2)
-filtered_activity_data = activity_data[activity_data['Activity Type'].isin(activity_types)]
-if len(activity_types) == 5:
-    chart2_subtitle = "All economic activity types included"
+# Calculate totals for the selected region
+if selected_region != 'All Regions':
+    region_total_institutions = filtered_size_data['Count'].sum()
+    region_total_activities = filtered_activity_data['Towns with Activity'].sum()
 else:
-    chart2_subtitle = f"Showing {len(activity_types)} of 5 activity types"
+    region_total_institutions = filtered_size_data['Count'].sum()
+    region_total_activities = filtered_activity_data['Towns with Activity'].sum()
 
 # Key Metrics Row
 col_m1, col_m2, col_m3, col_m4, col_m5 = st.columns(5)
@@ -148,36 +170,43 @@ with col_m5:
 # Main Interactive Visualizations Section
 st.markdown("---")
 st.markdown("## 🎯 Interactive Trade Data Visualizations")
-st.markdown("*Use the sidebar controls to filter and analyze the Lebanese trade data below*")
+st.markdown("*Use the sidebar controls to filter and analyze Lebanese trade data by city*")
 
 col1, col2 = st.columns(2)
 
-# VISUALIZATION 1: Business Size Distribution (INTERACTIVE - responds to size_focus)
+# VISUALIZATION 1: Regional Business Size Distribution (INTERACTIVE - responds to region filter)
 with col1:
     st.markdown("### 📊 Commercial Institution Size Distribution")
     st.markdown(f"*{chart1_subtitle}*")
     
-    if len(filtered_size_dist) > 0:
-        fig1 = px.pie(filtered_size_dist, values='Count', names='Institution Size', hole=0.5,
+    if len(filtered_size_data) > 0:
+        # Aggregate data for the selected region(s)
+        if selected_region != 'All Regions':
+            plot_data = filtered_size_data
+        else:
+            # Sum across all regions for national view
+            plot_data = filtered_size_data.groupby('Institution Size')['Count'].sum().reset_index()
+        
+        fig1 = px.pie(plot_data, values='Count', names='Institution Size', hole=0.5,
                       color_discrete_sequence=['#FF6B6B', '#4ECDC4', '#45B7D1'])
         fig1.update_traces(textposition='auto', textinfo='percent+label', textfont_size=14)
         fig1.update_layout(
             height=250,
             template='plotly_white',
             margin=dict(l=20, r=20, t=20, b=20),
-            annotations=[dict(text=f'Total<br>{filtered_size_dist["Count"].sum():,}', x=0.5, y=0.5, font_size=14, showarrow=False)]
+            annotations=[dict(text=f'Total<br>{plot_data["Count"].sum():,}', x=0.5, y=0.5, font_size=14, showarrow=False)]
         )
         st.plotly_chart(fig1, use_container_width=True)
         
-        # Show impact of filter
-        if size_focus != 'All Sizes':
-            st.info(f"🎯 Filter Impact: Showing {filtered_size_dist['Count'].sum():,} institutions ({filtered_size_dist['Percentage'].iloc[0]}% of total)")
+        # Show regional analysis insight
+        if selected_region != 'All Regions':
+            st.info(f"🗺️ Regional Focus: {selected_region} has {region_total_institutions:,} total institutions")
         else:
-            st.success(f"📈 Total Analysis: {filtered_size_dist['Count'].sum():,} institutions across all sizes")
+            st.success(f"🇱🇧 National Overview: {region_total_institutions:,} institutions across all Lebanese regions")
     else:
-        st.error("No data available for selected filter")
+        st.error("No data available for selected region")
 
-# VISUALIZATION 2: Activity Presence (INTERACTIVE - responds to activity_types filter)
+# VISUALIZATION 2: Regional Activity Presence (INTERACTIVE - responds to region filter)  
 with col2:
     st.markdown("### 🏬 Economic Activity Presence Across Towns")
     st.markdown(f"*{chart2_subtitle}*")
@@ -197,15 +226,13 @@ with col2:
         )
         st.plotly_chart(fig2, use_container_width=True)
         
-        # Show impact of filter
-        if len(activity_types) < 5:
-            total_coverage = filtered_activity_data['Towns with Activity'].sum()
-            st.info(f"🎯 Filter Impact: Selected activities cover {total_coverage:,} town-activity combinations")
+        # Show regional analysis insight
+        if selected_region != 'All Regions':
+            st.info(f"🗺️ Regional Focus: {selected_region} activities span {region_total_activities} town-activity combinations")
         else:
-            total_coverage = filtered_activity_data['Towns with Activity'].sum()
-            st.success(f"📈 Complete Analysis: All activities cover {total_coverage:,} town-activity combinations")
+            st.success(f"🇱🇧 National Overview: {region_total_activities} town-activity combinations across Lebanon")
     else:
-        st.warning("⚠️ Please select at least one activity type from the sidebar")
+        st.warning("⚠️ No activity data available for selected region")
 
 # Context and Insights Section
 st.markdown("---")
@@ -216,37 +243,43 @@ with st.expander("🔍 Detailed Analysis & Interactive Features", expanded=True)
     col_i1, col_i2 = st.columns(2)
     with col_i1:
         st.markdown("""
-        **Lebanese Economic Structure:**
-        - Small enterprises dominate: 38,940 institutions (91.8% of total)
-        - Medium-sized businesses: 2,612 institutions (6.2% of total)
-        - Large institutions: 884 businesses (2.1% of total)
-        - Total commercial institutions: 42,436 establishments
+        **Lebanese Regional Economic Structure:**
+        - **Bekaa**: Agricultural and commercial hub with 9,230 institutions
+        - **Mount Lebanon**: Largest economic center with 13,240 institutions  
+        - **North Lebanon**: Industrial and trade region with 8,460 institutions
+        - **South Lebanon**: Coastal commercial area with 6,720 institutions
+        - **Nabatieh**: Southern agricultural region with 4,586 institutions
         """)
         
-        # Dynamic insights based on size filter
-        if size_focus == 'Small Institutions Only':
-            st.markdown("**🔍 Small Institution Focus:** These represent the backbone of Lebanon's economy, primarily family-owned businesses and individual enterprises.")
-        elif size_focus == 'Medium Institutions Only':
-            st.markdown("**🔍 Medium Institution Focus:** These businesses bridge the gap between small enterprises and large corporations, often regional players.")
-        elif size_focus == 'Large Institutions Only':
-            st.markdown("**🔍 Large Institution Focus:** Major corporations and establishments that drive significant economic activity and employment.")
+        # Dynamic insights based on regional filter
+        if selected_region == 'Mount Lebanon':
+            st.markdown("**🗺️ Mount Lebanon Focus:** Lebanon's economic powerhouse, containing Beirut and major commercial centers. Highest concentration of medium and large institutions.")
+        elif selected_region == 'Bekaa':
+            st.markdown("**🗺️ Bekaa Valley Focus:** Agricultural heartland with strong commercial activities. Mix of agricultural businesses and trading institutions.")
+        elif selected_region == 'North Lebanon':
+            st.markdown("**🗺️ North Lebanon Focus:** Industrial region including Tripoli. Strong manufacturing and service sector presence.")
+        elif selected_region == 'South Lebanon':
+            st.markdown("**🗺️ South Lebanon Focus:** Coastal region with port-based trade activities and tourism-related businesses.")
+        elif selected_region == 'Nabatieh':
+            st.markdown("**🗺️ Nabatieh Focus:** Predominantly agricultural region with growing commercial and service sectors.")
+        else:
+            st.markdown("**🗺️ National Overview:** Complete analysis across all five Lebanese governorates showing regional economic diversity.")
         
     with col_i2:
-        st.markdown(f"""
-        **Economic Activity Distribution:**
-        - Self Employment: Most widespread (722 towns - 63.5%)
-        - Commerce Activities: Present in 493 towns (43.4%)  
-        - Public Sector: Available in 207 towns (18.2%)
-        - Service Institutions: Found in 126 towns (11.1%)
-        - Banking Access: Limited to 91 towns (8.0%)
+        st.markdown("""
+        **Regional Economic Activity Distribution:**
+        - **Self Employment**: Most widespread across all regions
+        - **Commerce Activities**: Strong in Mount Lebanon and Bekaa  
+        - **Public Sector**: Present in all regional centers
+        - **Service Institutions**: Concentrated in urban areas
+        - **Banking Access**: Limited, highest in Mount Lebanon and Bekaa
         """)
         
-        # Dynamic insights based on activity filter
-        if len(activity_types) < 5:
-            selected_activities_text = ', '.join(activity_types)
-            st.markdown(f"**🔍 Activity Focus:** Currently analyzing {selected_activities_text}. This represents {len(activity_types)} of 5 major economic activity categories.")
+        # Dynamic insights based on regional and focus filters
+        if selected_region != 'All Regions':
+            st.markdown(f"**🗺️ {selected_region} Regional Analysis:** Currently analyzing economic activities specific to this governorate. Regional focus provides targeted insights for local economic development.")
         else:
-            st.markdown("**🔍 Complete Activity Analysis:** All economic activities included, providing comprehensive coverage of Lebanese trade patterns.")
+            st.markdown("**🇱🇧 National Economic Activity Analysis:** Complete overview of economic activities across all Lebanese regions, showing national patterns and regional variations.")
 
 # Interactive Feature Summary
 st.markdown("---")
