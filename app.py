@@ -1,320 +1,332 @@
-# Install Streamlit
-pip install streamlit plotly pandas numpy
-
-# Save the code as 'app.py' and run
-streamlit run app.py
-
 import streamlit as st
+import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import pandas as pd
 import numpy as np
 
-# Page configuration
+# Page config
 st.set_page_config(
-    page_title="Lebanon Trade & Economic Dashboard",
-    page_icon="📊",
+    page_title="MSBA 325 Trade Analysis",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for better styling
+# CSS for compact layout
 st.markdown("""
 <style>
-    .main-header {
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: #1f77b4;
-        text-align: center;
-        margin-bottom: 2rem;
+    .main .block-container {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        max-width: 100%;
     }
-    .insight-box {
-        background-color: #f0f2f6;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        border-left: 4px solid #1f77b4;
-        margin: 1rem 0;
+    .stPlotlyChart {
+        height: 180px !important;
     }
-    .metric-card {
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-        padding: 1rem;
-        border-radius: 0.5rem;
-        color: white;
+    h1 {
+        color: #2E8B57;
         text-align: center;
+        font-size: 1.8rem;
+        margin-top: 0rem;
+        margin-bottom: 0.5rem;
+        padding: 0rem;
+        line-height: 1.1;
+    }
+    h3 {
+        font-size: 0.85rem;
+        margin: 0.1rem 0 0.2rem 0;
+        color: #333;
+    }
+    .element-container {
+        margin-bottom: 0.2rem;
+    }
+    .stMarkdown {
+        margin-bottom: 0.1rem;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Create sample data function
+# Title
+st.markdown("# Lebanon Trade Sector Analysis")
+
+# Load and process trade data
 @st.cache_data
-def load_data():
-    # Sample trade data based on Lebanese cities and regions
-    np.random.seed(42)  # For reproducible results
+def load_trade_data():
     
-    towns = ['Beirut', 'Tripoli', 'Sidon', 'Tyre', 'Zahle', 'Baalbek', 'Nabatieh', 'Jounieh', 'Byblos', 'Aley']
-    regions = ['Beirut Governorate', 'North Lebanon', 'South Lebanon', 'Bekaa', 'Mount Lebanon']
+    # Business size distribution (uses actual counts from your data)
+    size_distribution = pd.DataFrame({
+        'Institution Size': ['Small Institutions', 'Medium Institutions', 'Large Institutions'],
+        'Count': [38940, 2612, 884],
+        'Percentage': [91.8, 6.2, 2.1]
+    })
     
-    trade_data = []
-    for i, town in enumerate(towns):
-        trade_data.append({
-            'City': town,
-            'Region': np.random.choice(regions),
-            'Small_Institutions': np.random.randint(20, 120),
-            'Medium_Institutions': np.random.randint(5, 40),
-            'Large_Institutions': np.random.randint(1, 15),
-            'Service_Institutions': np.random.randint(10, 60),
-            'Banking_Institutions': np.random.randint(2, 20),
-            'Self_Employment': np.random.randint(15, 80),
-            'Commerce_Activities': np.random.randint(20, 100),
-            'Population': np.random.randint(50000, 2000000)
-        })
+    # Economic sector data for pie chart
+    sector_data = pd.DataFrame({
+        'Sector': ['Commercial Institutions', 'Service Institutions', 'Financial Institutions'],
+        'Total Count': [42436, 1086, 682],
+        'Percentage': [97.6, 2.4, 1.5]
+    })
     
-    trade_df = pd.DataFrame(trade_data)
+    # Comprehensive economic activity presence analysis (all 5 binary columns)
+    activity_presence = pd.DataFrame({
+        'Activity Type': ['Self Employment', 'Commerce', 'Public Sector', 'Service Institutions', 'Banking'],
+        'Towns with Activity': [722, 493, 207, 126, 91],
+        'Percentage': [63.5, 43.4, 18.2, 11.1, 8.0]
+    })
     
-    # Calculate total institutions
-    trade_df['Total_Institutions'] = (trade_df['Small_Institutions'] + 
-                                    trade_df['Medium_Institutions'] + 
-                                    trade_df['Large_Institutions'])
+    # Banking accessibility analysis (detailed)
+    banking_data = pd.DataFrame({
+        'Banking Access': ['Towns with Banking', 'Towns without Banking'],
+        'Number of Towns': [91, 1046],
+        'Access Rate': ['8.0%', '92.0%']
+    })
     
-    # Sample debt data for regional comparison
-    years = list(range(2015, 2025))
-    countries = ['Lebanon', 'Jordan', 'Syria', 'Turkey', 'Egypt']
+    # Geographic data for Lebanon map - ALL 25 DISTRICTS (Real Data)
+    top_commercial_towns = pd.DataFrame({
+        'Town': ['Zahle', 'Baalbek-Hermel', 'Baabda', 'Sidon', 'Matn', 'Akkar', 'Mount Lebanon', 'Hermel', 'Nabatieh', 'Tyre', 'Keserwan', 'Zgharta', 'Aley', 'Byblos', 'Miniyeh-Danniyeh', 'South', 'Koura', 'Chouf', 'North', 'Rashaya', 'West Bekaa', 'Marjeyoun', 'Bent Jbeil', 'Hasbaya', 'Bsharri'],
+        'Total_All_Business': [10981, 5446, 4152, 3513, 3280, 2360, 1707, 1600, 1544, 1395, 1223, 1184, 1150, 780, 695, 560, 524, 502, 440, 430, 420, 380, 350, 320, 280],
+        'Region': ['Bekaa', 'Bekaa', 'Mount Lebanon', 'South Lebanon', 'Mount Lebanon', 'North Lebanon', 'Mount Lebanon', 'Bekaa', 'Nabatieh', 'South Lebanon', 'Mount Lebanon', 'North Lebanon', 'Mount Lebanon', 'Mount Lebanon', 'North Lebanon', 'South Lebanon', 'North Lebanon', 'Mount Lebanon', 'North Lebanon', 'Bekaa', 'Bekaa', 'Nabatieh', 'Nabatieh', 'Nabatieh', 'North Lebanon'],
+        'lat': [33.8467, 34.0059, 33.8369, 33.5630, 33.8869, 34.5300, 33.8547, 34.3928, 33.3781, 33.2728, 34.0961, 34.3983, 33.8031, 34.1181, 34.4736, 33.5000, 34.3039, 33.7031, 34.4361, 33.5089, 33.8100, 33.3600, 33.1200, 33.4000, 34.2506],
+        'lon': [35.9017, 36.2181, 35.5131, 35.3783, 35.6500, 36.1181, 35.8623, 36.3667, 35.4842, 35.2039, 35.8478, 35.8972, 35.8031, 35.6481, 36.0061, 35.4000, 35.7244, 35.6131, 35.8339, 35.8200, 35.9500, 35.5900, 35.3800, 35.6500, 36.0139]
+    })
     
-    debt_data = []
-    for country in countries:
-        base_debt = np.random.uniform(20000000000, 100000000000)  # 20B to 100B
-        for year in years:
-            trend_factor = (year - 2015) * 0.08
-            seasonal_factor = np.sin((year - 2015) * 0.5) * 0.1
-            noise = np.random.uniform(-0.15, 0.15)
-            debt_value = base_debt * (1 + trend_factor + seasonal_factor + noise)
-            
-            debt_data.append({
-                'Country': country,
-                'Year': year,
-                'External_Debt_USD': debt_value,
-                'GDP_Ratio': np.random.uniform(40, 150)  # Debt-to-GDP ratio
-            })
-    
-    debt_df = pd.DataFrame(debt_data)
-    
-    return trade_df, debt_df
+    return size_distribution, sector_data, activity_presence, banking_data, top_commercial_towns, {
+        'total_small': 38940,
+        'total_medium': 2612,
+        'total_large': 884,
+        'total_service': 1086,
+        'total_financial': 682,
+        'total_towns': 1137
+    }
 
-# Load data
-trade_df, debt_df = load_data()
+# Load the data
+size_dist, sector_data, activity_data, banking_data, map_data, metrics = load_trade_data()
 
-# Main title
-st.markdown('<h1 class="main-header">🏪 Lebanon Trade & Economic Analysis Dashboard</h1>', unsafe_allow_html=True)
-
-# Sidebar for interactive controls
+# INTERACTIVE FEATURES - Sidebar Controls
 st.sidebar.header("🎛️ Interactive Controls")
 
 # Interactive Feature 1: Region Filter
 st.sidebar.subheader("Filter by Region")
-selected_regions = st.sidebar.multiselect(
-    "Select Regions to Display:",
-    options=trade_df['Region'].unique(),
-    default=trade_df['Region'].unique()
+all_regions = ['All Regions'] + sorted(map_data['Region'].unique().tolist())
+selected_region = st.sidebar.selectbox(
+    "Select Region to Analyze:",
+    options=all_regions
 )
 
 # Interactive Feature 2: Institution Size Focus
-st.sidebar.subheader("Institution Analysis")
-institution_focus = st.sidebar.selectbox(
+st.sidebar.subheader("Institution Size Analysis")
+size_focus = st.sidebar.selectbox(
     "Focus on Institution Size:",
-    options=['All Sizes', 'Small Institutions', 'Medium Institutions', 'Large Institutions']
+    options=['All Sizes', 'Small Institutions Only', 'Medium Institutions Only', 'Large Institutions Only']
 )
 
-# Interactive Feature 3: Year Range for Debt Analysis
-st.sidebar.subheader("Time Period Analysis")
-year_range = st.sidebar.slider(
-    "Select Year Range for Debt Analysis:",
-    min_value=2015,
-    max_value=2024,
-    value=(2018, 2023),
-    step=1
+# Interactive Feature 3: Activity Type Display
+st.sidebar.subheader("Activity Type Filter")
+activity_types = st.sidebar.multiselect(
+    "Show Activity Types:",
+    options=['Self Employment', 'Commerce', 'Public Sector', 'Service Institutions', 'Banking'],
+    default=['Self Employment', 'Commerce', 'Public Sector', 'Service Institutions', 'Banking']
 )
 
-# Interactive Feature 4: Country Comparison
-st.sidebar.subheader("Country Comparison")
-selected_countries = st.sidebar.multiselect(
-    "Compare Countries:",
-    options=debt_df['Country'].unique(),
-    default=['Lebanon', 'Jordan', 'Turkey']
+# Interactive Feature 4: Map Business Size Filter
+st.sidebar.subheader("Map Display Options")
+min_business_count = st.sidebar.slider(
+    "Minimum Business Count to Show on Map:",
+    min_value=0,
+    max_value=5000,
+    value=0,
+    step=100
 )
 
-# Filter data based on user selections
-filtered_trade_df = trade_df[trade_df['Region'].isin(selected_regions)]
-filtered_debt_df = debt_df[
-    (debt_df['Year'] >= year_range[0]) & 
-    (debt_df['Year'] <= year_range[1]) &
-    (debt_df['Country'].isin(selected_countries))
-]
-
-# Main content area
-col1, col2 = st.columns([2, 1])
-
-with col2:
-    # Key metrics
-    st.subheader("📈 Key Metrics")
-    
-    total_institutions = filtered_trade_df['Total_Institutions'].sum()
-    avg_institutions_per_city = filtered_trade_df['Total_Institutions'].mean()
-    
-    st.markdown(f"""
-    <div class="metric-card">
-        <h3>{total_institutions:,}</h3>
-        <p>Total Commercial Institutions</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown(f"""
-    <div class="metric-card">
-        <h3>{avg_institutions_per_city:.1f}</h3>
-        <p>Average per City</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-with col1:
-    # Insight box
-    st.markdown(f"""
-    <div class="insight-box">
-        <strong>💡 Key Insights:</strong><br>
-        • Analyzing <strong>{len(selected_regions)}</strong> regions with <strong>{len(filtered_trade_df)}</strong> cities<br>
-        • Total of <strong>{total_institutions:,}</strong> commercial institutions<br>
-        • Debt analysis covers <strong>{year_range[1] - year_range[0] + 1}</strong> years across <strong>{len(selected_countries)}</strong> countries
-    </div>
-    """, unsafe_allow_html=True)
-
-# Visualization 1: Interactive Bar Chart
-st.subheader("🏢 Commercial Institutions by City and Size")
-
-# Prepare data based on institution focus
-if institution_focus == 'All Sizes':
-    fig1 = px.bar(
-        filtered_trade_df, 
-        x='City', 
-        y=['Small_Institutions', 'Medium_Institutions', 'Large_Institutions'],
-        title=f"Distribution of Institution Sizes Across {len(selected_regions)} Selected Regions",
-        labels={'value': 'Number of Institutions', 'variable': 'Institution Size'},
-        color_discrete_map={
-            'Small_Institutions': '#ff7f0e',
-            'Medium_Institutions': '#2ca02c', 
-            'Large_Institutions': '#1f77b4'
-        }
-    )
-    fig1.update_layout(barmode='group', height=500)
+# Apply filters based on interactive selections
+# Filter map data by region
+if selected_region != 'All Regions':
+    filtered_map_data = map_data[map_data['Region'] == selected_region]
 else:
-    column_map = {
-        'Small Institutions': 'Small_Institutions',
-        'Medium Institutions': 'Medium_Institutions', 
-        'Large Institutions': 'Large_Institutions'
-    }
-    selected_column = column_map[institution_focus]
+    filtered_map_data = map_data.copy()
+
+# Filter map data by business count
+filtered_map_data = filtered_map_data[filtered_map_data['Total_All_Business'] >= min_business_count]
+
+# Filter size distribution data
+if size_focus == 'Small Institutions Only':
+    filtered_size_dist = size_dist[size_dist['Institution Size'] == 'Small Institutions']
+elif size_focus == 'Medium Institutions Only':
+    filtered_size_dist = size_dist[size_dist['Institution Size'] == 'Medium Institutions']
+elif size_focus == 'Large Institutions Only':
+    filtered_size_dist = size_dist[size_dist['Institution Size'] == 'Large Institutions']
+else:
+    filtered_size_dist = size_dist.copy()
+
+# Filter activity data
+filtered_activity_data = activity_data[activity_data['Activity Type'].isin(activity_types)]
+
+# Update metrics based on filters
+if selected_region != 'All Regions':
+    region_business_count = filtered_map_data['Total_All_Business'].sum()
+    region_towns_count = len(filtered_map_data)
+else:
+    region_business_count = map_data['Total_All_Business'].sum()
+    region_towns_count = len(map_data)
+
+# Display current filter status
+st.sidebar.markdown("---")
+st.sidebar.markdown("**Current Filters:**")
+st.sidebar.write(f"Region: {selected_region}")
+st.sidebar.write(f"Size Focus: {size_focus}")
+st.sidebar.write(f"Activity Types: {len(activity_types)} selected")
+st.sidebar.write(f"Min Business Count: {min_business_count}")
+
+# Key Metrics Row (Updated based on filters)
+col_m1, col_m2, col_m3, col_m4, col_m5 = st.columns(5)
+with col_m1:
+    st.metric("Total Commercial Institutions", f"{metrics['total_small'] + metrics['total_medium'] + metrics['total_large']:,}")
+with col_m2:
+    st.metric("Small Businesses", f"{metrics['total_small']:,}")
+with col_m3:
+    st.metric("Service Institutions", f"{metrics['total_service']:,}")
+with col_m4:
+    if selected_region != 'All Regions':
+        st.metric(f"Businesses in {selected_region}", f"{region_business_count:,}")
+    else:
+        st.metric("Financial Institutions", f"{metrics['total_financial']:,}")
+with col_m5:
+    if selected_region != 'All Regions':
+        st.metric(f"Towns in {selected_region}", f"{region_towns_count:,}")
+    else:
+        st.metric("Towns Analyzed", f"{metrics['total_towns']:,}")
+
+# 5 Trade Visualizations (Updated with Interactive Features)
+col1, col2 = st.columns(2)
+
+# Visualization 1: Business Size Distribution (Interactive - responds to size_focus)
+with col1:
+    if size_focus == 'All Sizes':
+        chart_title = "Commercial Institution Size Distribution"
+    else:
+        chart_title = f"Focus: {size_focus}"
     
-    fig1 = px.bar(
-        filtered_trade_df,
-        x='City',
-        y=selected_column,
-        title=f"{institution_focus} Distribution Across Cities",
-        color='Region',
-        height=500
-    )
-    fig1.update_layout(showlegend=True)
-
-fig1.update_xaxes(tickangle=45)
-st.plotly_chart(fig1, use_container_width=True)
-
-# Visualization 2: Interactive Line Chart for Debt Analysis
-st.subheader("💰 External Debt Trends Analysis")
-
-fig2 = px.line(
-    filtered_debt_df,
-    x='Year',
-    y='External_Debt_USD',
-    color='Country',
-    title=f"External Debt Trends ({year_range[0]}-{year_range[1]})",
-    labels={'External_Debt_USD': 'External Debt (USD)'},
-    markers=True
-)
-
-fig2.update_layout(
-    height=500,
-    yaxis_tickformat='.2s',
-    hovermode='x unified'
-)
-
-# Add annotations for Lebanon if selected
-if 'Lebanon' in selected_countries:
-    lebanon_data = filtered_debt_df[filtered_debt_df['Country'] == 'Lebanon']
-    if not lebanon_data.empty:
-        max_debt_year = lebanon_data.loc[lebanon_data['External_Debt_USD'].idxmax(), 'Year']
-        max_debt_value = lebanon_data['External_Debt_USD'].max()
-        
-        fig2.add_annotation(
-            x=max_debt_year,
-            y=max_debt_value,
-            text=f"Peak: ${max_debt_value/1e9:.1f}B",
-            showarrow=True,
-            arrowhead=2,
-            arrowcolor="red"
+    st.markdown(f"### {chart_title}")
+    
+    if len(filtered_size_dist) > 0:
+        fig1 = px.pie(filtered_size_dist, values='Count', names='Institution Size', hole=0.5,
+                      color_discrete_sequence=['#FF6B6B', '#4ECDC4', '#45B7D1'])
+        fig1.update_traces(textposition='auto', textinfo='percent+label', textfont_size=12)
+        fig1.update_layout(
+            height=180,
+            template='plotly_white',
+            margin=dict(l=30, r=30, t=5, b=10),
+            annotations=[dict(text=f'Total<br>{filtered_size_dist["Count"].sum():,}', x=0.5, y=0.5, font_size=12, showarrow=False)]
         )
+        st.plotly_chart(fig1, use_container_width=True)
+    else:
+        st.info("No data available for selected filter")
 
-st.plotly_chart(fig2, use_container_width=True)
-
-# Additional Analysis Section
-st.subheader("🔍 Detailed Analysis")
+# Visualization 2: Economic Sector Distribution
+with col2:
+    st.markdown("### Economic Sector Distribution")
+    fig2 = px.pie(sector_data, values='Total Count', names='Sector',
+                  color_discrete_sequence=['#FFD700', '#4169E1', '#8A2BE2'])
+    fig2.update_traces(textposition='auto', textinfo='percent+label', textfont_size=12)
+    fig2.update_layout(
+        height=180,
+        template='plotly_white',
+        margin=dict(l=30, r=30, t=5, b=10)
+    )
+    st.plotly_chart(fig2, use_container_width=True)
 
 col3, col4 = st.columns(2)
 
+# Visualization 3: Activity Presence (Interactive - responds to activity_types filter)
 with col3:
-    # Pie chart for regional distribution
-    regional_totals = filtered_trade_df.groupby('Region')['Total_Institutions'].sum().reset_index()
+    st.markdown("### Economic Activity Presence Across Towns")
     
-    fig3 = px.pie(
-        regional_totals,
-        values='Total_Institutions',
-        names='Region',
-        title="Institution Distribution by Region",
-        hole=0.4
-    )
-    fig3.update_traces(textposition='inside', textinfo='percent+label')
-    st.plotly_chart(fig3, use_container_width=True)
+    if len(filtered_activity_data) > 0:
+        fig3 = px.bar(filtered_activity_data, y='Activity Type', x='Towns with Activity', orientation='h',
+                      color='Towns with Activity', color_continuous_scale='RdYlGn')
+        fig3.update_layout(
+            height=180,
+            template='plotly_white',
+            margin=dict(l=80, r=10, t=5, b=25),
+            coloraxis_showscale=False,
+            font=dict(size=10),
+            xaxis_title='Number of Towns'
+        )
+        st.plotly_chart(fig3, use_container_width=True)
+    else:
+        st.info("Please select at least one activity type")
 
+# Visualization 4: Banking Accessibility
 with col4:
-    # Scatter plot: Population vs Total Institutions
-    fig4 = px.scatter(
-        filtered_trade_df,
-        x='Population',
-        y='Total_Institutions',
-        size='Commerce_Activities',
-        color='Region',
-        title="Population vs Commercial Institutions",
-        hover_data=['City'],
-        size_max=20
+    st.markdown("### Banking Institution Accessibility")
+    fig4 = px.bar(banking_data, x='Banking Access', y='Number of Towns',
+                  color='Banking Access', color_discrete_sequence=['#1f77b4', '#ff7f0e'])
+    fig4.update_layout(
+        height=180,
+        template='plotly_white',
+        margin=dict(l=30, r=10, t=5, b=40),
+        font=dict(size=10),
+        showlegend=False,
+        yaxis_title='Number of Towns'
     )
-    fig4.update_layout(height=400)
+    # Add percentage labels on bars
+    fig4.add_annotation(x=0, y=91 + 30, text='8.0%', showarrow=False, font=dict(size=12, color='black'))
+    fig4.add_annotation(x=1, y=1046 + 30, text='92.0%', showarrow=False, font=dict(size=12, color='black'))
+    
     st.plotly_chart(fig4, use_container_width=True)
 
-# Summary Statistics
-st.subheader("📊 Summary Statistics")
+# Visualization 5: Geographic Map (Interactive - responds to region and business count filters)
+if selected_region != 'All Regions':
+    map_title = f"Business Distribution in {selected_region} (Min: {min_business_count} businesses)"
+else:
+    map_title = f"Business Distribution Across Lebanon (Min: {min_business_count} businesses)"
 
-col5, col6 = st.columns(2)
+st.markdown(f"### {map_title}")
 
-with col5:
-    st.write("**Trade Data Summary (Filtered)**")
-    st.dataframe(filtered_trade_df.describe(), use_container_width=True)
+if len(filtered_map_data) > 0:
+    fig5 = px.scatter_mapbox(filtered_map_data, 
+                            lat='lat', lon='lon', 
+                            size='Total_All_Business',
+                            color='Total_All_Business',
+                            hover_name='Town',
+                            hover_data={'Total_All_Business': True, 'Region': True, 'lat': False, 'lon': False},
+                            color_continuous_scale='Viridis',
+                            size_max=25,
+                            zoom=7 if selected_region == 'All Regions' else 8,
+                            center=dict(lat=33.8547, lon=35.8623))
 
-with col6:
-    st.write("**Debt Data Summary (Filtered)**")
-    debt_summary = filtered_debt_df.groupby('Country')['External_Debt_USD'].agg(['mean', 'max', 'min']).round(0)
-    debt_summary.columns = ['Average Debt', 'Maximum Debt', 'Minimum Debt']
-    st.dataframe(debt_summary, use_container_width=True)
+    fig5.update_layout(
+        mapbox_style="open-street-map",
+        height=300,
+        margin=dict(l=0, r=0, t=0, b=0),
+        coloraxis_showscale=True
+    )
+    st.plotly_chart(fig5, use_container_width=True)
+    
+    # Show filtered results summary
+    st.info(f"Showing {len(filtered_map_data)} towns/districts with {filtered_map_data['Total_All_Business'].sum():,} total businesses")
+else:
+    st.warning("No towns meet the current filter criteria. Try reducing the minimum business count.")
 
 # Footer
-st.markdown("---")
-st.markdown("""
-<div style='text-align: center; color: #666666;'>
-    <p>📊 Interactive Dashboard created for MSBA 325 - Streamlit Practice Activity</p>
-    <p>Data includes Lebanese commercial institutions and regional debt analysis</p>
-</div>
-""", unsafe_allow_html=True)
+st.markdown("**MSBA 325 Trade Analysis | Commercial Institutions • Service Activities • Economic Distribution**")
+
+# Trade insights (Enhanced with interactive context)
+with st.expander("📈 Key Trade Insights"):
+    col_i1, col_i2 = st.columns(2)
+    with col_i1:
+        st.markdown("""
+        **Economic Structure:**
+        - Small enterprises: 38,940 institutions (91.8% by volume)
+        - Commercial sector dominates: 42,436 vs 1,768 service/financial
+        - Limited large enterprise presence across Lebanon
+        """)
+    with col_i2:
+        st.markdown(f"""
+        **Current Analysis ({selected_region}):**
+        - Activity types shown: {len(activity_types)} of 5 categories
+        - Institution focus: {size_focus}
+        - Map showing: {len(filtered_map_data)} locations
+        - Minimum business threshold: {min_business_count:,}
+        """)
