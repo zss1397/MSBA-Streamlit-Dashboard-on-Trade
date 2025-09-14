@@ -255,20 +255,20 @@ col_s1, col_s2 = st.columns(2)
 
 with col_s1:
     st.markdown("""
-    **Feature 1: Institution Size Filter**
-    - Controls the pie chart display
-    - Choose to focus on specific institution sizes
-    - Shows percentage and total count for selected size
-    - Provides targeted analysis of business scale distribution
+    **Feature 1: Regional Analysis Filter**
+    - Primary filter affecting both visualizations
+    - Choose specific Lebanese governorates or view all regions
+    - Shows institution distribution and activity presence by region
+    - Provides targeted regional economic analysis
     """)
 
 with col_s2:
     st.markdown("""
-    **Feature 2: Activity Type Filter**
-    - Controls the horizontal bar chart
-    - Select which economic activities to analyze
-    - Shows town coverage for each activity type
-    - Enables comparison between different economic sectors
+    **Feature 2: Analysis Focus Selector**
+    - Choose perspective: Institution Size or Economic Activity
+    - Emphasizes different aspects of the regional data
+    - Complements the regional filter for deeper analysis
+    - Enables focused interpretation of regional patterns
     """)
 
 # Footer
