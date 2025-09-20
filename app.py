@@ -86,10 +86,17 @@ def load_trade_data():
         ]
     })
     
+    # Fixed totals calculation
+    total_small = 8500 + 12200 + 7800 + 6200 + 4240  # 38,940
+    total_medium = 580 + 820 + 520 + 410 + 282       # 2,612  
+    total_large = 150 + 220 + 140 + 110 + 64         # 684
+    total_institutions = total_small + total_medium + total_large  # 42,236
+    
     return regional_size_data, regional_activity_data, {
-        'total_small': 38940,
-        'total_medium': 2612,
-        'total_large': 884,
+        'total_small': total_small,
+        'total_medium': total_medium,
+        'total_large': total_large,
+        'total_institutions': total_institutions,
         'total_service': 1086,
         'total_financial': 682,
         'total_towns': 1137
@@ -154,10 +161,10 @@ else:
     region_total_institutions = filtered_size_data['Count'].sum()
     region_total_activities = filtered_activity_data['Towns with Activity'].sum()
 
-# Key Metrics Row
+# Key Metrics Row (CORRECTED TOTALS)
 col_m1, col_m2, col_m3, col_m4, col_m5 = st.columns(5)
 with col_m1:
-    st.metric("Total Commercial Institutions", f"{metrics['total_small'] + metrics['total_medium'] + metrics['total_large']:,}")
+    st.metric("Total Commercial Institutions", f"{metrics['total_institutions']:,}")
 with col_m2:
     st.metric("Small Businesses", f"{metrics['total_small']:,}")
 with col_m3:
@@ -234,74 +241,124 @@ with col2:
     else:
         st.warning("⚠️ No activity data available for selected region")
 
-# Context and Insights Section
+# Context and Insights Section (CONVERTED TO BULLET POINTS)
 st.markdown("---")
 st.markdown("## 📈 Key Trade Insights & Analysis")
 
-# Trade insights with dynamic content based on filters
+# Trade insights with bullet points instead of filter-style content
 with st.expander("🔍 Detailed Analysis & Interactive Features", expanded=True):
     col_i1, col_i2 = st.columns(2)
     with col_i1:
+        st.markdown("**Lebanese Regional Economic Structure:**")
         st.markdown("""
-        **Lebanese Regional Economic Structure:**
-        - **Bekaa**: Agricultural and commercial hub with 9,230 institutions
-        - **Mount Lebanon**: Largest economic center with 13,240 institutions  
-        - **North Lebanon**: Industrial and trade region with 8,460 institutions
-        - **South Lebanon**: Coastal commercial area with 6,720 institutions
-        - **Nabatieh**: Southern agricultural region with 4,586 institutions
+        • **Bekaa** - Agricultural and commercial hub with 9,230 institutions
+        • **Mount Lebanon** - Largest economic center with 13,240 institutions  
+        • **North Lebanon** - Industrial and trade region with 8,460 institutions
+        • **South Lebanon** - Coastal commercial area with 6,720 institutions
+        • **Nabatieh** - Southern agricultural region with 4,586 institutions
         """)
         
-        # Dynamic insights based on regional filter
+        # Dynamic insights based on regional filter (in bullet format)
         if selected_region == 'Mount Lebanon':
-            st.markdown("**🗺️ Mount Lebanon Focus:** Lebanon's economic powerhouse, containing Beirut and major commercial centers. Highest concentration of medium and large institutions.")
+            st.markdown("**🗺️ Mount Lebanon Regional Analysis:**")
+            st.markdown("""
+            • Lebanon's economic powerhouse containing Beirut and major commercial centers
+            • Highest concentration of medium and large institutions (1,040 total)
+            • Dominant in financial and service sectors
+            • Key driver of national economic activity
+            """)
         elif selected_region == 'Bekaa':
-            st.markdown("**🗺️ Bekaa Valley Focus:** Agricultural heartland with strong commercial activities. Mix of agricultural businesses and trading institutions.")
+            st.markdown("**🗺️ Bekaa Valley Regional Analysis:**")
+            st.markdown("""
+            • Agricultural heartland with strong commercial activities
+            • Mix of agricultural businesses and trading institutions
+            • Strong self-employment and commerce presence
+            • Important food production and distribution hub
+            """)
         elif selected_region == 'North Lebanon':
-            st.markdown("**🗺️ North Lebanon Focus:** Industrial region including Tripoli. Strong manufacturing and service sector presence.")
+            st.markdown("**🗺️ North Lebanon Regional Analysis:**")
+            st.markdown("""
+            • Industrial region including Tripoli port city
+            • Strong manufacturing and service sector presence
+            • Significant commercial and trade activities
+            • Strategic location for regional commerce
+            """)
         elif selected_region == 'South Lebanon':
-            st.markdown("**🗺️ South Lebanon Focus:** Coastal region with port-based trade activities and tourism-related businesses.")
+            st.markdown("**🗺️ South Lebanon Regional Analysis:**")
+            st.markdown("""
+            • Coastal region with port-based trade activities
+            • Tourism-related businesses and services
+            • Agricultural and fishing industries
+            • Cross-border trade significance
+            """)
         elif selected_region == 'Nabatieh':
-            st.markdown("**🗺️ Nabatieh Focus:** Predominantly agricultural region with growing commercial and service sectors.")
+            st.markdown("**🗺️ Nabatieh Regional Analysis:**")
+            st.markdown("""
+            • Predominantly agricultural region
+            • Growing commercial and service sectors
+            • Smallest but developing economic base
+            • Traditional and modern business mix
+            """)
         else:
-            st.markdown("**🗺️ National Overview:** Complete analysis across all five Lebanese governorates showing regional economic diversity.")
+            st.markdown("**🇱🇧 National Economic Overview:**")
+            st.markdown("""
+            • Complete analysis across all five Lebanese governorates
+            • Shows regional economic diversity and specialization
+            • Mount Lebanon dominates with 31% of all institutions
+            • Small businesses comprise 92% of all commercial institutions
+            """)
         
     with col_i2:
+        st.markdown("**Regional Economic Activity Distribution:**")
         st.markdown("""
-        **Regional Economic Activity Distribution:**
-        - **Self Employment**: Most widespread across all regions
-        - **Commerce Activities**: Strong in Mount Lebanon and Bekaa  
-        - **Public Sector**: Present in all regional centers
-        - **Service Institutions**: Concentrated in urban areas
-        - **Banking Access**: Limited, highest in Mount Lebanon and Bekaa
+        • **Self Employment** - Most widespread across all regions (722 towns)
+        • **Commerce Activities** - Strong in Mount Lebanon and Bekaa (493 towns)
+        • **Public Sector** - Present in all regional centers (207 towns)
+        • **Service Institutions** - Concentrated in urban areas (126 towns)
+        • **Banking Access** - Limited coverage, highest in Mount Lebanon (91 towns)
         """)
         
-        # Dynamic insights based on regional and focus filters
+        # Dynamic activity insights based on regional filter (in bullet format)
         if selected_region != 'All Regions':
-            st.markdown(f"**🗺️ {selected_region} Regional Analysis:** Currently analyzing economic activities specific to this governorate. Regional focus provides targeted insights for local economic development.")
+            region_activities_detail = filtered_activity_data.groupby('Activity Type')['Towns with Activity'].sum().to_dict()
+            st.markdown(f"**🗺️ {selected_region} Activity Analysis:**")
+            activity_bullets = []
+            for activity, count in region_activities_detail.items():
+                activity_bullets.append(f"• **{activity}** - {count} towns with activity")
+            st.markdown("\n".join(activity_bullets))
+            st.markdown(f"• **Total Coverage** - {sum(region_activities_detail.values())} town-activity combinations")
         else:
-            st.markdown("**🇱🇧 National Economic Activity Analysis:** Complete overview of economic activities across all Lebanese regions, showing national patterns and regional variations.")
+            st.markdown("**🇱🇧 National Activity Analysis:**")
+            st.markdown("""
+            • **Complete Coverage** - 1,639 town-activity combinations across Lebanon
+            • **Self Employment Dominance** - Present in 44% of all town-activity combinations
+            • **Commerce Concentration** - Strong presence in major economic centers
+            • **Service Distribution** - Varies significantly by regional development level
+            """)
 
-# Interactive Feature Summary
+# Interactive Feature Summary (CONVERTED TO BULLET POINTS)
 st.markdown("---")
 st.markdown("### 🎛️ Interactive Features Summary")
 col_s1, col_s2 = st.columns(2)
 
 with col_s1:
+    st.markdown("**Feature 1: Regional Analysis Filter**")
     st.markdown("""
-    **Feature 1: Regional Analysis Filter**
-    - Primary filter affecting both visualizations
-    - Choose specific Lebanese governorates or view all regions
-    - Shows institution distribution and activity presence by region
-    - Provides targeted regional economic analysis
+    • Primary filter affecting both visualizations
+    • Choose specific Lebanese governorates or view all regions
+    • Shows institution distribution and activity presence by region
+    • Provides targeted regional economic analysis
+    • Updates metrics and insights dynamically
     """)
 
 with col_s2:
+    st.markdown("**Feature 2: Analysis Focus Selector**")
     st.markdown("""
-    **Feature 2: Analysis Focus Selector**
-    - Choose perspective: Institution Size or Economic Activity
-    - Emphasizes different aspects of the regional data
-    - Complements the regional filter for deeper analysis
-    - Enables focused interpretation of regional patterns
+    • Choose perspective: Institution Size or Economic Activity
+    • Emphasizes different aspects of the regional data
+    • Complements the regional filter for deeper analysis
+    • Enables focused interpretation of regional patterns
+    • Guides analysis direction for specific insights
     """)
 
 # Footer
