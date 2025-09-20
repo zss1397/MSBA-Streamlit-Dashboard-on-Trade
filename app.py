@@ -219,17 +219,34 @@ with col2:
     st.markdown(f"*{chart2_subtitle}*")
     
     if len(filtered_activity_data) > 0:
-        fig2 = px.bar(filtered_activity_data, y='Activity Type', x='Towns with Activity', orientation='h',
-                      color='Towns with Activity', color_continuous_scale='RdYlGn',
-                      text='Towns with Activity')
-        fig2.update_traces(textposition='outside', textfont_size=12)
+        # Aggregate data for cleaner visualization
+        if selected_region != 'All Regions':
+            # For single region, show simple bar chart
+            plot_data2 = filtered_activity_data
+            fig2 = px.bar(plot_data2, x='Towns with Activity', y='Activity Type', orientation='h',
+                          color='Activity Type', 
+                          color_discrete_sequence=['#2E8B57', '#4ECDC4', '#FF6B6B', '#45B7D1', '#FFA07A'],
+                          text='Towns with Activity')
+        else:
+            # For all regions, sum by activity type for cleaner view
+            plot_data2 = filtered_activity_data.groupby('Activity Type')['Towns with Activity'].sum().reset_index()
+            plot_data2 = plot_data2.sort_values('Towns with Activity', ascending=True)
+            fig2 = px.bar(plot_data2, x='Towns with Activity', y='Activity Type', orientation='h',
+                          color='Activity Type',
+                          color_discrete_sequence=['#2E8B57', '#4ECDC4', '#FF6B6B', '#45B7D1', '#FFA07A'],
+                          text='Towns with Activity')
+        
+        fig2.update_traces(textposition='outside', textfont_size=12, texttemplate='%{text}')
         fig2.update_layout(
             height=250,
             template='plotly_white',
-            margin=dict(l=100, r=20, t=20, b=30),
-            coloraxis_showscale=False,
+            margin=dict(l=120, r=40, t=20, b=30),
+            showlegend=False,
             font=dict(size=11),
-            xaxis_title='Number of Towns with Activity'
+            xaxis_title='Number of Towns with Activity',
+            yaxis_title='',
+            xaxis=dict(showgrid=True, gridcolor='lightgray'),
+            yaxis=dict(showgrid=False)
         )
         st.plotly_chart(fig2, use_container_width=True)
         
@@ -360,6 +377,11 @@ with col_s2:
     • Enables focused interpretation of regional patterns
     • Guides analysis direction for specific insights
     """)
+
+# Footer
+st.markdown("---")
+st.markdown("**MSBA 325 Trade Analysis Dashboard | Lebanese Commercial Institutions & Economic Activities**")
+st.markdown("*Interactive data visualization demonstrating Streamlit and Plotly capabilities for business analytics*")
 
 # Footer
 st.markdown("---")
