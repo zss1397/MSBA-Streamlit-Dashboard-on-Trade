@@ -107,7 +107,7 @@ regional_size_data, regional_activity_data, metrics = load_trade_data()
 
 # INTERACTIVE FEATURES - Sidebar Controls
 st.sidebar.header("🎛️ Interactive Controls")
-st.sidebar.markdown("*Select filters to analyze Lebanese trade data by region*")
+st.sidebar.markdown("*Select filters to analyze Lebanese trade data*")
 
 # Interactive Feature 1: Region Filter (PRIMARY FILTER - impacts both visualizations)
 st.sidebar.subheader("🗺️ Regional Analysis Filter")
@@ -118,16 +118,26 @@ selected_region = st.sidebar.selectbox(
     help="This filter impacts both visualizations below"
 )
 
+# Interactive Feature 2: Institution Size Filter (SECONDARY FILTER - impacts both visualizations)
+st.sidebar.subheader("🏢 Institution Size Filter")
+institution_sizes = st.sidebar.multiselect(
+    "Select Institution Sizes to Include:",
+    options=['Small Institutions', 'Medium Institutions', 'Large Institutions'],
+    default=['Small Institutions', 'Medium Institutions', 'Large Institutions'],
+    help="Choose which business sizes to include in the analysis"
+)
+
 # Display current filter status
 st.sidebar.markdown("---")
-st.sidebar.markdown("**🎯 Current Regional Analysis:**")
+st.sidebar.markdown("**🎯 Current Analysis Filters:**")
 st.sidebar.write(f"• **Region**: {selected_region}")
+st.sidebar.write(f"• **Institution Sizes**: {', '.join(institution_sizes) if institution_sizes else 'None selected'}")
 
 # Show regional info
 if selected_region != 'All Regions':
     region_institutions = regional_size_data[regional_size_data['Region'] == selected_region]['Count'].sum()
     region_activities = regional_activity_data[regional_activity_data['Region'] == selected_region]['Towns with Activity'].sum()
-    st.sidebar.write(f"• **Institutions**: {region_institutions:,}")
+    st.sidebar.write(f"• **Total Institutions**: {region_institutions:,}")
     st.sidebar.write(f"• **Activity Coverage**: {region_activities} towns")
 
 # Apply filters based on interactive selections
@@ -144,13 +154,29 @@ else:
     chart1_subtitle = "Institution distribution across all Lebanese regions"
     chart2_subtitle = "Economic activities across all Lebanese towns"
 
-# Calculate totals for the selected region
-if selected_region != 'All Regions':
-    region_total_institutions = filtered_size_data['Count'].sum()
-    region_total_activities = filtered_activity_data['Towns with Activity'].sum()
+# Filter 2: Institution size filter (IMPACTS VISUALIZATION 1)
+if institution_sizes:
+    filtered_size_data = filtered_size_data[filtered_size_data['Institution Size'].isin(institution_sizes)]
+    if len(institution_sizes) < 3:
+        size_types = ' + '.join(institution_sizes)
+        if selected_region != 'All Regions':
+            chart1_subtitle = f"{size_types} in {selected_region}"
+        else:
+            chart1_subtitle = f"{size_types} across all Lebanese regions"
 else:
-    region_total_institutions = filtered_size_data['Count'].sum()
-    region_total_activities = filtered_activity_data['Towns with Activity'].sum()
+    # If no institution sizes selected, create empty dataframe
+    filtered_size_data = filtered_size_data.iloc[0:0]
+
+# Calculate totals for the selected filters
+if len(filtered_size_data) > 0:
+    filtered_total_institutions = filtered_size_data['Count'].sum()
+else:
+    filtered_total_institutions = 0
+
+if len(filtered_activity_data) > 0:
+    filtered_total_activities = filtered_activity_data['Towns with Activity'].sum()
+else:
+    filtered_total_activities = 0
 
 # Key Metrics Row (CORRECTED TOTALS)
 col_m1, col_m2, col_m3, col_m4, col_m5 = st.columns(5)
@@ -172,13 +198,13 @@ st.markdown("*Use the sidebar controls to filter and analyze Lebanese trade data
 
 col1, col2 = st.columns(2)
 
-# VISUALIZATION 1: Regional Business Size Distribution (INTERACTIVE - responds to region filter)
+# VISUALIZATION 1: Regional Business Size Distribution (INTERACTIVE - responds to both filters)
 with col1:
     st.markdown("### 📊 Commercial Institution Size Distribution")
     st.markdown(f"*{chart1_subtitle}*")
     
     if len(filtered_size_data) > 0:
-        # Aggregate data for the selected region(s)
+        # Aggregate data for the selected region(s) and institution sizes
         if selected_region != 'All Regions':
             plot_data = filtered_size_data
         else:
@@ -196,13 +222,18 @@ with col1:
         )
         st.plotly_chart(fig1, use_container_width=True)
         
-        # Show regional analysis insight
-        if selected_region != 'All Regions':
-            st.info(f"🗺️ Regional Focus: {selected_region} has {region_total_institutions:,} total institutions")
+        # Show filter-based insights
+        if len(institution_sizes) < 3:
+            st.info(f"🏢 Showing {', '.join(institution_sizes)} only: {filtered_total_institutions:,} institutions")
+        elif selected_region != 'All Regions':
+            st.info(f"🗺️ Regional Focus: {selected_region} has {filtered_total_institutions:,} total institutions")
         else:
-            st.success(f"🇱🇧 National Overview: {region_total_institutions:,} institutions across all Lebanese regions")
+            st.success(f"🇱🇧 National Overview: {filtered_total_institutions:,} institutions across all Lebanese regions")
     else:
-        st.error("No data available for selected region")
+        if not institution_sizes:
+            st.warning("⚠️ Please select at least one institution size to display data")
+        else:
+            st.error("No data available for selected filters")
 
 # VISUALIZATION 2: Regional Activity Presence (INTERACTIVE - responds to region filter)  
 with col2:
@@ -243,9 +274,9 @@ with col2:
         
         # Show regional analysis insight
         if selected_region != 'All Regions':
-            st.info(f"🗺️ Regional Focus: {selected_region} activities span {region_total_activities} town-activity combinations")
+            st.info(f"🗺️ Regional Focus: {selected_region} activities span {filtered_total_activities} town-activity combinations")
         else:
-            st.success(f"🇱🇧 National Overview: {region_total_activities} town-activity combinations across Lebanon")
+            st.success(f"🇱🇧 National Overview: {filtered_total_activities} town-activity combinations across Lebanon")
     else:
         st.warning("⚠️ No activity data available for selected region")
 
@@ -330,20 +361,20 @@ st.markdown("### 🎛️ Interactive Features Summary")
 col_s1, col_s2 = st.columns(2)
 
 with col_s1:
-    st.markdown("**Regional Analysis Filter**")
-    st.markdown("- Primary interactive filter affecting both visualizations")
+    st.markdown("**Feature 1: Regional Analysis Filter**")
+    st.markdown("- Primary filter affecting both visualizations")
     st.markdown("- Choose specific Lebanese governorates or view all regions")
     st.markdown("- Shows institution distribution and activity presence by region")
     st.markdown("- Provides targeted regional economic analysis")
     st.markdown("- Updates metrics and insights dynamically")
 
 with col_s2:
-    st.markdown("**Comprehensive Analysis Display**")
-    st.markdown("- Shows both institution size and economic activity perspectives")
-    st.markdown("- No need to toggle between different analysis focuses")
-    st.markdown("- Complete regional insights displayed simultaneously")
-    st.markdown("- Enables comprehensive interpretation of regional patterns")
-    st.markdown("- Provides full economic picture for each region")
+    st.markdown("**Feature 2: Institution Size Filter**")
+    st.markdown("- Secondary filter affecting the pie chart visualization")
+    st.markdown("- Select which business sizes to include (Small/Medium/Large)")
+    st.markdown("- Enables analysis of specific institution scales")
+    st.markdown("- Combines with regional filter for detailed insights")
+    st.markdown("- Updates totals and percentages dynamically")
 
 st.markdown("---")
 st.markdown("### 📊 Key Insights & Analysis Summary")
