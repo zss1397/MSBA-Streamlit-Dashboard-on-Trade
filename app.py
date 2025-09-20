@@ -118,19 +118,10 @@ selected_region = st.sidebar.selectbox(
     help="This filter impacts both visualizations below"
 )
 
-# Interactive Feature 2: Analysis Focus (SECONDARY FILTER)
-st.sidebar.subheader("🎯 Analysis Focus")
-analysis_focus = st.sidebar.selectbox(
-    "Choose Analysis Perspective:",
-    options=['Institution Size Distribution', 'Economic Activity Coverage'],
-    help="Choose which aspect to emphasize in the regional analysis"
-)
-
 # Display current filter status
 st.sidebar.markdown("---")
 st.sidebar.markdown("**🎯 Current Regional Analysis:**")
 st.sidebar.write(f"• **Region**: {selected_region}")
-st.sidebar.write(f"• **Focus**: {analysis_focus}")
 
 # Show regional info
 if selected_region != 'All Regions':
@@ -267,123 +258,107 @@ with st.expander("🔍 Detailed Analysis & Interactive Features", expanded=True)
     col_i1, col_i2 = st.columns(2)
     with col_i1:
         st.markdown("**Lebanese Regional Economic Structure:**")
-        st.markdown("""
-        • **Bekaa** - Agricultural and commercial hub with 9,230 institutions
-        • **Mount Lebanon** - Largest economic center with 13,240 institutions  
-        • **North Lebanon** - Industrial and trade region with 8,460 institutions
-        • **South Lebanon** - Coastal commercial area with 6,720 institutions
-        • **Nabatieh** - Southern agricultural region with 4,586 institutions
-        """)
+        st.markdown("- **Bekaa** - Agricultural and commercial hub with 9,230 institutions")
+        st.markdown("- **Mount Lebanon** - Largest economic center with 13,240 institutions")
+        st.markdown("- **North Lebanon** - Industrial and trade region with 8,460 institutions")
+        st.markdown("- **South Lebanon** - Coastal commercial area with 6,720 institutions")
+        st.markdown("- **Nabatieh** - Southern agricultural region with 4,586 institutions")
         
         # Dynamic insights based on regional filter (in bullet format)
         if selected_region == 'Mount Lebanon':
             st.markdown("**🗺️ Mount Lebanon Regional Analysis:**")
-            st.markdown("""
-            • Lebanon's economic powerhouse containing Beirut and major commercial centers
-            • Highest concentration of medium and large institutions (1,040 total)
-            • Dominant in financial and service sectors
-            • Key driver of national economic activity
-            """)
+            st.markdown("- Lebanon's economic powerhouse containing Beirut and major commercial centers")
+            st.markdown("- Highest concentration of medium and large institutions (1,040 total)")
+            st.markdown("- Dominant in financial and service sectors")
+            st.markdown("- Key driver of national economic activity")
         elif selected_region == 'Bekaa':
             st.markdown("**🗺️ Bekaa Valley Regional Analysis:**")
-            st.markdown("""
-            • Agricultural heartland with strong commercial activities
-            • Mix of agricultural businesses and trading institutions
-            • Strong self-employment and commerce presence
-            • Important food production and distribution hub
-            """)
+            st.markdown("- Agricultural heartland with strong commercial activities")
+            st.markdown("- Mix of agricultural businesses and trading institutions")
+            st.markdown("- Strong self-employment and commerce presence")
+            st.markdown("- Important food production and distribution hub")
         elif selected_region == 'North Lebanon':
             st.markdown("**🗺️ North Lebanon Regional Analysis:**")
-            st.markdown("""
-            • Industrial region including Tripoli port city
-            • Strong manufacturing and service sector presence
-            • Significant commercial and trade activities
-            • Strategic location for regional commerce
-            """)
+            st.markdown("- Industrial region including Tripoli port city")
+            st.markdown("- Strong manufacturing and service sector presence")
+            st.markdown("- Significant commercial and trade activities")
+            st.markdown("- Strategic location for regional commerce")
         elif selected_region == 'South Lebanon':
             st.markdown("**🗺️ South Lebanon Regional Analysis:**")
-            st.markdown("""
-            • Coastal region with port-based trade activities
-            • Tourism-related businesses and services
-            • Agricultural and fishing industries
-            • Cross-border trade significance
-            """)
+            st.markdown("- Coastal region with port-based trade activities")
+            st.markdown("- Tourism-related businesses and services")
+            st.markdown("- Agricultural and fishing industries")
+            st.markdown("- Cross-border trade significance")
         elif selected_region == 'Nabatieh':
             st.markdown("**🗺️ Nabatieh Regional Analysis:**")
-            st.markdown("""
-            • Predominantly agricultural region
-            • Growing commercial and service sectors
-            • Smallest but developing economic base
-            • Traditional and modern business mix
-            """)
+            st.markdown("- Predominantly agricultural region")
+            st.markdown("- Growing commercial and service sectors")
+            st.markdown("- Smallest but developing economic base")
+            st.markdown("- Traditional and modern business mix")
         else:
             st.markdown("**🇱🇧 National Economic Overview:**")
-            st.markdown("""
-            • Complete analysis across all five Lebanese governorates
-            • Shows regional economic diversity and specialization
-            • Mount Lebanon dominates with 31% of all institutions
-            • Small businesses comprise 92% of all commercial institutions
-            """)
+            st.markdown("- Complete analysis across all five Lebanese governorates")
+            st.markdown("- Shows regional economic diversity and specialization")
+            st.markdown("- Mount Lebanon dominates with 31% of all institutions")
+            st.markdown("- Small businesses comprise 92% of all commercial institutions")
         
     with col_i2:
         st.markdown("**Regional Economic Activity Distribution:**")
-        st.markdown("""
-        • **Self Employment** - Most widespread across all regions (722 towns)
-        • **Commerce Activities** - Strong in Mount Lebanon and Bekaa (493 towns)
-        • **Public Sector** - Present in all regional centers (207 towns)
-        • **Service Institutions** - Concentrated in urban areas (126 towns)
-        • **Banking Access** - Limited coverage, highest in Mount Lebanon (91 towns)
-        """)
+        st.markdown("- **Self Employment** - Most widespread across all regions (722 towns)")
+        st.markdown("- **Commerce Activities** - Strong in Mount Lebanon and Bekaa (493 towns)")
+        st.markdown("- **Public Sector** - Present in all regional centers (207 towns)")
+        st.markdown("- **Service Institutions** - Concentrated in urban areas (126 towns)")
+        st.markdown("- **Banking Access** - Limited coverage, highest in Mount Lebanon (91 towns)")
         
         # Dynamic activity insights based on regional filter (in bullet format)
         if selected_region != 'All Regions':
             region_activities_detail = filtered_activity_data.groupby('Activity Type')['Towns with Activity'].sum().to_dict()
             st.markdown(f"**🗺️ {selected_region} Activity Analysis:**")
-            activity_bullets = []
             for activity, count in region_activities_detail.items():
-                activity_bullets.append(f"• **{activity}** - {count} towns with activity")
-            st.markdown("\n".join(activity_bullets))
-            st.markdown(f"• **Total Coverage** - {sum(region_activities_detail.values())} town-activity combinations")
+                st.markdown(f"- **{activity}** - {count} towns with activity")
+            st.markdown(f"- **Total Coverage** - {sum(region_activities_detail.values())} town-activity combinations")
         else:
             st.markdown("**🇱🇧 National Activity Analysis:**")
-            st.markdown("""
-            • **Complete Coverage** - 1,639 town-activity combinations across Lebanon
-            • **Self Employment Dominance** - Present in 44% of all town-activity combinations
-            • **Commerce Concentration** - Strong presence in major economic centers
-            • **Service Distribution** - Varies significantly by regional development level
-            """)
+            st.markdown("- **Complete Coverage** - 1,639 town-activity combinations across Lebanon")
+            st.markdown("- **Self Employment Dominance** - Present in 44% of all town-activity combinations")
+            st.markdown("- **Commerce Concentration** - Strong presence in major economic centers")
+            st.markdown("- **Service Distribution** - Varies significantly by regional development level")
 
-# Interactive Feature Summary (CONVERTED TO BULLET POINTS)
+# Interactive Features Summary & Final Analysis
 st.markdown("---")
 st.markdown("### 🎛️ Interactive Features Summary")
 col_s1, col_s2 = st.columns(2)
 
 with col_s1:
-    st.markdown("**Feature 1: Regional Analysis Filter**")
-    st.markdown("""
-    • Primary filter affecting both visualizations
-    • Choose specific Lebanese governorates or view all regions
-    • Shows institution distribution and activity presence by region
-    • Provides targeted regional economic analysis
-    • Updates metrics and insights dynamically
-    """)
+    st.markdown("**Regional Analysis Filter**")
+    st.markdown("- Primary interactive filter affecting both visualizations")
+    st.markdown("- Choose specific Lebanese governorates or view all regions")
+    st.markdown("- Shows institution distribution and activity presence by region")
+    st.markdown("- Provides targeted regional economic analysis")
+    st.markdown("- Updates metrics and insights dynamically")
 
 with col_s2:
-    st.markdown("**Feature 2: Analysis Focus Selector**")
-    st.markdown("""
-    • Choose perspective: Institution Size or Economic Activity
-    • Emphasizes different aspects of the regional data
-    • Complements the regional filter for deeper analysis
-    • Enables focused interpretation of regional patterns
-    • Guides analysis direction for specific insights
-    """)
+    st.markdown("**Comprehensive Analysis Display**")
+    st.markdown("- Shows both institution size and economic activity perspectives")
+    st.markdown("- No need to toggle between different analysis focuses")
+    st.markdown("- Complete regional insights displayed simultaneously")
+    st.markdown("- Enables comprehensive interpretation of regional patterns")
+    st.markdown("- Provides full economic picture for each region")
 
-# Footer
 st.markdown("---")
-st.markdown("**MSBA 325 Trade Analysis Dashboard | Lebanese Commercial Institutions & Economic Activities**")
-st.markdown("*Interactive data visualization demonstrating Streamlit and Plotly capabilities for business analytics*")
+st.markdown("### 📊 Key Insights & Analysis Summary")
+col_final1, col_final2 = st.columns(2)
 
-# Footer
-st.markdown("---")
-st.markdown("**MSBA 325 Trade Analysis Dashboard | Lebanese Commercial Institutions & Economic Activities**")
-st.markdown("*Interactive data visualization demonstrating Streamlit and Plotly capabilities for business analytics*")
+with col_final1:
+    st.markdown("**Economic Distribution Insights:**")
+    st.markdown("- Small businesses dominate Lebanon's commercial landscape (92% of institutions)")
+    st.markdown("- Mount Lebanon leads with 31% of all commercial institutions")
+    st.markdown("- Regional specialization varies significantly across governorates")
+    st.markdown("- Banking access remains limited, concentrated in major centers")
+
+with col_final2:
+    st.markdown("**Interactive Dashboard Benefits:**")
+    st.markdown("- Real-time filtering enables targeted regional analysis")
+    st.markdown("- Dynamic visualizations adapt to user selections")
+    st.markdown("- Comprehensive view of Lebanese trade sector structure")
+    st.markdown("- Professional analytics tool built with Streamlit and Plotly")
