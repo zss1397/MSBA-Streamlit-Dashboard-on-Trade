@@ -280,12 +280,12 @@ with col2:
     else:
         st.warning("⚠️ No activity data available for selected region")
 
-# Context and Insights Section (CONVERTED TO BULLET POINTS)
+# Context and Insights Section (STREAMLINED)
 st.markdown("---")
-st.markdown("## 📈 Key Trade Insights & Analysis")
+st.markdown("## 📈 Key Trade Insights")
 
-# Trade insights with bullet points instead of filter-style content
-with st.expander("🔍 Detailed Analysis & Interactive Features", expanded=True):
+# Trade insights with clean structure
+with st.expander("🔍 Regional Structure & National Overview", expanded=True):
     col_i1, col_i2 = st.columns(2)
     with col_i1:
         st.markdown("**Lebanese Regional Economic Structure:**")
@@ -328,10 +328,10 @@ with st.expander("🔍 Detailed Analysis & Interactive Features", expanded=True)
             st.markdown("- Traditional and modern business mix")
         else:
             st.markdown("**🇱🇧 National Economic Overview:**")
-            st.markdown("- Complete analysis across all five Lebanese governorates")
-            st.markdown("- Shows regional economic diversity and specialization")
-            st.markdown("- Mount Lebanon dominates with 31% of all institutions")
+            st.markdown("- Analysis across all five Lebanese governorates shows economic diversity")
+            st.markdown("- Mount Lebanon contains 31% of all commercial institutions")
             st.markdown("- Small businesses comprise 92% of all commercial institutions")
+            st.markdown("- Regional specialization varies significantly across governorates")
         
     with col_i2:
         st.markdown("**Regional Economic Activity Distribution:**")
@@ -350,49 +350,42 @@ with st.expander("🔍 Detailed Analysis & Interactive Features", expanded=True)
             st.markdown(f"- **Total Coverage** - {sum(region_activities_detail.values())} town-activity combinations")
         else:
             st.markdown("**🇱🇧 National Activity Analysis:**")
-            st.markdown("- **Complete Coverage** - 1,639 town-activity combinations across Lebanon")
-            st.markdown("- **Self Employment Dominance** - Present in 44% of all town-activity combinations")
-            st.markdown("- **Commerce Concentration** - Strong presence in major economic centers")
-            st.markdown("- **Service Distribution** - Varies significantly by regional development level")
-
-
+            st.markdown("- Complete coverage with 1,639 town-activity combinations across Lebanon")
+            st.markdown("- Self employment dominance with 44% of all combinations")
+            st.markdown("- Commerce concentration in major economic centers")
+            st.markdown("- Service distribution varies by regional development level")
 
 st.markdown("---")
-st.markdown("### 📊 Key Insights & Analysis Summary")
-col_final1, col_final2 = st.columns(2)
+st.markdown("## 📊 Key Economic Insights")
+col_insight1, col_insight2 = st.columns(2)
 
-with col_final1:
-    st.markdown("**Economic Distribution Insights:**")
-    st.markdown("- Small businesses dominate Lebanon's commercial landscape (92% of institutions)")
-    st.markdown("- Mount Lebanon leads with 31% of all commercial institutions")
-    st.markdown("- Regional specialization varies significantly across governorates")
-    st.markdown("- Banking access remains limited, concentrated in major centers")
+with col_insight1:
+    st.markdown("**Economic Structure Insights:**")
+    st.markdown("- Lebanon's economy heavily depends on small businesses (92% of institutions)")
+    st.markdown("- Mount Lebanon serves as the dominant economic hub")
+    st.markdown("- Regional specialization reflects geographic advantages")
+    st.markdown("- Banking access remains concentrated in major centers")
 
-with col_final2:
-    st.markdown("**Interactive Dashboard Benefits:**")
-    st.markdown("- Real-time filtering enables targeted regional analysis")
-    st.markdown("- Dynamic visualizations adapt to user selections")
-    st.markdown("- Comprehensive view of Lebanese trade sector structure")
-    st.markdown("- Professional analytics tool built with Streamlit and Plotly")
-
+with col_insight2:
+    st.markdown("**Strategic Implications:**")
+    st.markdown("- Economic development varies significantly by region")
+    st.markdown("- Small business support is crucial for national economy")
+    st.markdown("- Infrastructure investment needed in underserved regions")
+    st.markdown("- Financial services expansion could drive growth")
 
 # Interactive Features Summary & Final Analysis
 st.markdown("---")
-st.markdown("### 🎛️ Interactive Features Summary")
+st.markdown("## 🎛️ Interactive Features")
 col_s1, col_s2 = st.columns(2)
 
 with col_s1:
-    st.markdown("**Feature 1: Regional Analysis Filter**")
-    st.markdown("- Primary filter affecting both visualizations")
-    st.markdown("- Choose specific Lebanese governorates or view all regions")
-    st.markdown("- Shows institution distribution and activity presence by region")
-    st.markdown("- Provides targeted regional economic analysis")
-    st.markdown("- Updates metrics and insights dynamically")
+    st.markdown("**Regional Analysis Filter**")
+    st.markdown("- Select specific Lebanese governorates for targeted analysis")
+    st.markdown("- Compare economic patterns across different regions")
+    st.markdown("- Understand regional specialization and development levels")
 
 with col_s2:
-    st.markdown("**Feature 2: Institution Size Filter**")
-    st.markdown("- Secondary filter affecting the pie chart visualization")
-    st.markdown("- Select which business sizes to include (Small/Medium/Large)")
-    st.markdown("- Enables analysis of specific institution scales")
-    st.markdown("- Combines with regional filter for detailed insights")
-    st.markdown("- Updates totals and percentages dynamically")
+    st.markdown("**Institution Size Filter**")
+    st.markdown("- Focus on small, medium, or large business categories")
+    st.markdown("- Analyze business scale distribution patterns")
+    st.markdown("- Combined with regional filter for detailed insights")
