@@ -389,3 +389,9 @@ with col_s2:
     st.markdown("- Focus on small, medium, or large business categories")
     st.markdown("- Analyze business scale distribution patterns")
     st.markdown("- Combined with regional filter for detailed insights")
+
+with col_s2:
+    st.markdown("**Institution Size Filter**")
+    st.markdown("- Focus on small, medium, or large business categories")
+    st.markdown("- Analyze business scale distribution patterns")
+    st.markdown("- Combined with regional filter for detailed insights")
