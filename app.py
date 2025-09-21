@@ -329,8 +329,8 @@ with st.expander("🔍 Regional Structure & National Overview", expanded=True):
         else:
             st.markdown("**🇱🇧 National Economic Overview:**")
             st.markdown("- Analysis across all five Lebanese governorates shows economic diversity")
-            st.markdown("- Mount Lebanon contains 31% of all commercial institutions")
-            st.markdown("- Small businesses comprise 92% of all commercial institutions")
+            st.markdown("- Mount Lebanon contains the largest share of commercial institutions")
+            st.markdown("- Over nine in ten institutions are small-scale enterprises, shaping Lebanon's economic structure")
             st.markdown("- Regional specialization varies significantly across governorates")
         
     with col_i2:
@@ -362,7 +362,7 @@ col_insight1, col_insight2 = st.columns(2)
 with col_insight1:
     st.markdown("**Economic Structure Insights:**")
     st.markdown("- Lebanon's economy heavily depends on small businesses (92% of institutions)")
-    st.markdown("- Mount Lebanon serves as the dominant economic hub")
+    st.markdown("- Mount Lebanon serves as the dominant economic hub (31% of institutions)")
     st.markdown("- Regional specialization reflects geographic advantages")
     st.markdown("- Banking access remains concentrated in major centers")
 
@@ -373,9 +373,16 @@ with col_insight2:
     st.markdown("- Infrastructure investment needed in underserved regions")
     st.markdown("- Financial services expansion could drive growth")
 
-# Interactive Features Summary & Final Analysis
+# Interactive Features Summary
 st.markdown("---")
 st.markdown("## 🎛️ Interactive Features")
+
+st.markdown("""
+The **Regional Analysis Filter** allows users to focus on specific governorates and compare their economic structures, 
+while the **Institution Size Filter** lets users analyze patterns across small, medium, and large businesses. 
+When combined, they provide detailed insights into both geography and scale.
+""")
+
 col_s1, col_s2 = st.columns(2)
 
 with col_s1:
@@ -383,12 +390,6 @@ with col_s1:
     st.markdown("- Select specific Lebanese governorates for targeted analysis")
     st.markdown("- Compare economic patterns across different regions")
     st.markdown("- Understand regional specialization and development levels")
-
-with col_s2:
-    st.markdown("**Institution Size Filter**")
-    st.markdown("- Focus on small, medium, or large business categories")
-    st.markdown("- Analyze business scale distribution patterns")
-    st.markdown("- Combined with regional filter for detailed insights")
 
 with col_s2:
     st.markdown("**Institution Size Filter**")
