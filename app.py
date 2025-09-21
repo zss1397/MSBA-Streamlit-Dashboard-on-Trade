@@ -118,7 +118,7 @@ selected_region = st.sidebar.selectbox(
     help="This filter impacts both visualizations below"
 )
 
-# Interactive Feature 2: Institution Size Filter (SECONDARY FILTER - impacts both visualizations)
+# Interactive Feature 2: Institution Size Filter (SECONDARY FILTER - impacts visualization 1)
 st.sidebar.subheader("🏢 Institution Size Filter")
 institution_sizes = st.sidebar.multiselect(
     "Select Institution Sizes to Include:",
