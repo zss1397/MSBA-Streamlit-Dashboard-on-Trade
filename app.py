@@ -334,7 +334,7 @@ with st.expander("🔍 Regional Structure & National Overview", expanded=True):
             st.markdown("- Regional specialization varies significantly across governorates")
         
     with col_i2:
-        st.markdown("**Regional Economic Activity Distribution:**")
+        st.markdown("**Regional & National Activity Patterns:**")
         st.markdown("- **Self Employment** - Most widespread across all regions (722 towns)")
         st.markdown("- **Commerce Activities** - Strong in Mount Lebanon and Bekaa (493 towns)")
         st.markdown("- **Public Sector** - Present in all regional centers (207 towns)")
