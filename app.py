@@ -262,12 +262,12 @@ with col2:
         fig2.update_layout(
             height=250,
             template='plotly_white',
-            margin=dict(l=120, r=40, t=20, b=30),
+            margin=dict(l=120, r=60, t=20, b=30),  # Increased right margin from 40 to 60
             showlegend=False,
             font=dict(size=11),
             xaxis_title='Number of Towns with Activity',
             yaxis_title='',
-            xaxis=dict(showgrid=True, gridcolor='lightgray'),
+            xaxis=dict(showgrid=True, gridcolor='lightgray', range=[0, 800]),  # Set explicit x-axis range
             yaxis=dict(showgrid=False)
         )
         st.plotly_chart(fig2, use_container_width=True)
