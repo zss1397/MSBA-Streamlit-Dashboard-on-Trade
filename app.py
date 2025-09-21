@@ -355,6 +355,27 @@ with st.expander("🔍 Detailed Analysis & Interactive Features", expanded=True)
             st.markdown("- **Commerce Concentration** - Strong presence in major economic centers")
             st.markdown("- **Service Distribution** - Varies significantly by regional development level")
 
+
+
+st.markdown("---")
+st.markdown("### 📊 Key Insights & Analysis Summary")
+col_final1, col_final2 = st.columns(2)
+
+with col_final1:
+    st.markdown("**Economic Distribution Insights:**")
+    st.markdown("- Small businesses dominate Lebanon's commercial landscape (92% of institutions)")
+    st.markdown("- Mount Lebanon leads with 31% of all commercial institutions")
+    st.markdown("- Regional specialization varies significantly across governorates")
+    st.markdown("- Banking access remains limited, concentrated in major centers")
+
+with col_final2:
+    st.markdown("**Interactive Dashboard Benefits:**")
+    st.markdown("- Real-time filtering enables targeted regional analysis")
+    st.markdown("- Dynamic visualizations adapt to user selections")
+    st.markdown("- Comprehensive view of Lebanese trade sector structure")
+    st.markdown("- Professional analytics tool built with Streamlit and Plotly")
+
+
 # Interactive Features Summary & Final Analysis
 st.markdown("---")
 st.markdown("### 🎛️ Interactive Features Summary")
@@ -375,21 +396,3 @@ with col_s2:
     st.markdown("- Enables analysis of specific institution scales")
     st.markdown("- Combines with regional filter for detailed insights")
     st.markdown("- Updates totals and percentages dynamically")
-
-st.markdown("---")
-st.markdown("### 📊 Key Insights & Analysis Summary")
-col_final1, col_final2 = st.columns(2)
-
-with col_final1:
-    st.markdown("**Economic Distribution Insights:**")
-    st.markdown("- Small businesses dominate Lebanon's commercial landscape (92% of institutions)")
-    st.markdown("- Mount Lebanon leads with 31% of all commercial institutions")
-    st.markdown("- Regional specialization varies significantly across governorates")
-    st.markdown("- Banking access remains limited, concentrated in major centers")
-
-with col_final2:
-    st.markdown("**Interactive Dashboard Benefits:**")
-    st.markdown("- Real-time filtering enables targeted regional analysis")
-    st.markdown("- Dynamic visualizations adapt to user selections")
-    st.markdown("- Comprehensive view of Lebanese trade sector structure")
-    st.markdown("- Professional analytics tool built with Streamlit and Plotly")
